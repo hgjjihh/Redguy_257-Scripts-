@@ -34,9 +34,15 @@ local function LoadCached(name, url)
 
     if isfile(localPath) then
         print("[SystemLoader] Cached:", name)
-        local ok, result = pcall(loadfile(localPath))
-        if ok then return result end
-        warn("[SystemLoader] Cache corrupt, redownloading:", name)
+        local fn, ferr = loadfile(localPath)
+        if fn then
+            local ok, result = pcall(fn)
+            if ok then return result end
+            warn("[SystemLoader] Cache error:", tostring(result))
+        else
+            warn("[SystemLoader] Cache corrupt:", tostring(ferr))
+        end
+        -- Hapus file corrupt, download ulang
         pcall(delfile, localPath)
     end
 
@@ -70,9 +76,14 @@ local function LoadMaduleLoader()
         warn("[SystemLoader] MaduleLoader.lua not found, skipping custom modules")
         return { Dances = {}, StyleSets = {} }
     end
-    local ok, result = pcall(loadfile(path))
+    local fn, ferr = loadfile(path)
+    if not fn then
+        warn("[SystemLoader] MaduleLoader failed:", tostring(ferr))
+        return { Dances = {}, StyleSets = {} }
+    end
+    local ok, result = pcall(fn)
     if not ok then
-        warn("[SystemLoader] MaduleLoader failed:", tostring(result))
+        warn("[SystemLoader] MaduleLoader error:", tostring(result))
         return { Dances = {}, StyleSets = {} }
     end
     return result
