@@ -97,8 +97,15 @@ local SFX        = ModuleCore.SFX
 local Setting    = ModuleCore.Setting
 print("[SL] ModuleCore OK")
 
-local LinkLoader = LoadCached("ModulesLinkLoader", SOURCES.ModulesLinkLoader)
-print("[SL] ModulesLinkLoader OK")
+-- ModulesLinkLoader optional — tidak crash kalau 404
+local LinkLoader = { BHOP = {}, StyleSets = {} }
+local _llOk, _llResult = pcall(LoadCached, "ModulesLinkLoader", SOURCES.ModulesLinkLoader)
+if _llOk then
+    LinkLoader = _llResult
+    print("[SL] ModulesLinkLoader OK")
+else
+    warn("[SL] ModulesLinkLoader skipped:", tostring(_llResult):sub(1,80))
+end
 
 local ModuleContent = LoadCached("ModuleContent", SOURCES.ModuleContent)
 local Dances        = ModuleContent.Dances
@@ -112,8 +119,15 @@ local PostIntro   = ModuleIntro.PostIntro
 local Credits     = ModuleIntro.Credits
 print("[SL] ModuleIntro OK")
 
-local FootstepModule = LoadCached("FootstepModule", SOURCES.FootstepModule)
-print("[SL] FootstepModule OK")
+-- FootstepModule optional
+local FootstepModule = nil
+local _fpOk, _fpResult = pcall(LoadCached, "FootstepModule", SOURCES.FootstepModule)
+if _fpOk then
+    FootstepModule = _fpResult
+    print("[SL] FootstepModule OK")
+else
+    warn("[SL] FootstepModule skipped:", tostring(_fpResult):sub(1,80))
+end
 
 -- MaduleLoader (custom modules lokal)
 local FootstepOk = true
